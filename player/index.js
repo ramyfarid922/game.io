@@ -31,7 +31,7 @@ rl.question("Enter your name: ", function (name) {
       // I am not sure yet if this started number is going to be generated from the app
       // or provided by the user, so far, I let the user enter it
       rl.question("Enter number: ", function (number) {
-        socket.emit("sendFirstNumber", number);
+        socket.emit("inceptNumber", number);
         console.log(chalk.yellow("Waiting for other player move..."));
       });
     });
@@ -39,7 +39,7 @@ rl.question("Enter your name: ", function (name) {
     socket.on("number", () => {
       console.log(chalk.yellow("Your opponent made a move! Your turn now"));
       rl.question("Select a move from [-1, ,0, 1]: ", function (move) {
-        socket.emit("sendNumber", move);
+        socket.emit("sendMove", move);
         console.log(chalk.yellow("Waiting for other player move..."));
       });
     });
@@ -54,6 +54,11 @@ rl.question("Enter your name: ", function (name) {
   });
 
   socket.on("connect_error", () => {
+    console.log(chalk.red("Couldn't connect to game server! Closing..."));
+    return rl.close();
+  });
+
+  socket.on("reconnect_error", () => {
     console.log(chalk.red("Couldn't connect to game server! Closing..."));
     return rl.close();
   });

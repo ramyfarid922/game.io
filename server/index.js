@@ -9,16 +9,12 @@ const Game = require("./game");
 
 let game = new Game();
 
-console.log("Game initiated:", game);
-
 io.on("connection", (socket) => {
   if (game.status === "RUNNING") {
     // If game has two players and its state is set to "RUNNING"
     // Reject the 3rd player socket connection
     return socket.emit("serverFull", "Connection rejected! game is full");
   }
-
-  console.log("------------------------");
 
   // If game isn't full yet, emit a welcome event to the connecting player socket
   socket.emit("serverWelcome");
@@ -30,8 +26,9 @@ io.on("connection", (socket) => {
 
     game.addPlayer(player);
 
-    socket.emit("serverAcceptJoin", game.players.length);
+    socket.emit("serverAcceptJoin", game.capacity());
 
+    console.log("------------------------");
     console.log("Current game:", game);
 
     if (game.players.length === 2) {
@@ -40,8 +37,9 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("sendFirstNumber", (num) => {
-    let player = game.find(socket.id);
+  // Listen for the event of incepting first number
+  socket.on("inceptNumber", (num) => {
+    let player = game.findPlayer(socket.id);
 
     let number = parseInt(num);
     game.number = number;
@@ -57,23 +55,14 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("sendNumber", (move) => {
-    let player = game.players.find((player) => {
-      return player.id === socket.id;
-    });
+  socket.on("sendMove", (move) => {
+    game.processMove(socket.id, move);
+    game.logMove(socket.id, move);
 
-    let increment = parseInt(move);
-    let number = Math.floor((game.number + increment) / 3);
-    game.number = number;
-
-    console.log(player.name, "played", move, "Number is", number);
-
-    // winning logic here
-    if (game.number === 1) {
-      console.log(player.name, "WINS!", number);
-
+    if (game.winner) {
+      // Update the player who made the move that he won
       socket.emit("youWin");
-
+      // Update the opponent that they lost
       socket.broadcast.emit("youLose");
     } else {
       socket.broadcast.emit("number");
@@ -85,16 +74,8 @@ io.on("connection", (socket) => {
       return player.id === socket.id;
     });
     game.players.splice(game.players.indexOf(removed), 1);
-    game = {
-      turn: 0,
-      status: "PENDING",
-      players: [],
-      number: null,
-      winner: null,
-    };
-    console.log("------------------------");
-    console.log("Game reset!", game);
     socket.emit("playerLeaveGame");
+    game.reset();
   });
 });
 
