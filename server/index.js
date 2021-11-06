@@ -6,6 +6,20 @@ const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 5000;
 
+// Emitted events by server
+const emits = {
+  SERVER_WELCOME: "serverWelcome",
+  SERVER_ACCEPT_JOIN: "serverAcceptJoin",
+  SERVER_START_GAME: "serverStartGame",
+  SERVER_WELCOME: "serverWelcome",
+  PLAYER_LEAVE_GAME: "playerLeaveGame",
+};
+
+// events anticipated by server
+const incoming = {
+  PLAYER_JOIN_GAME: "playerJoinGame",
+};
+
 // Refactor later into a game class (using function constructor)
 let game = {
   turn: 0,
@@ -15,25 +29,28 @@ let game = {
   winner: null,
 };
 
+console.log("Game initiated:", game);
+
 io.on("connection", (socket) => {
   if (game.status === "RUNNING") {
     return socket.emit("serverFull", "Connection rejected! game is full");
   }
 
   console.log("------------------------");
-  console.log("New websocket connection from", socket.id);
 
-  socket.emit("serverWelcome", "Connection accepted!");
+  socket.emit("serverWelcome");
 
   socket.on("playerJoinGame", (name) => {
     let player = { name: name, id: socket.id };
     game.players.push(player);
-    console.log("Current game:", game);
+    socket.emit("serverAcceptJoin");
 
     if (game.players.length === 2) {
       game.status = "RUNNING";
-      socket.emit("serverStartGame");
+      return socket.emit("serverStartGame");
     }
+
+    console.log("Current game:", game);
   });
 
   socket.on("sendFirstNumber", (number) => {
@@ -75,8 +92,8 @@ io.on("connection", (socket) => {
       number: null,
       winner: null,
     };
-    console.log("Game reset!", game);
     console.log("------------------------");
+    console.log("Game reset!", game);
     socket.emit("playerLeaveGame");
   });
 });
