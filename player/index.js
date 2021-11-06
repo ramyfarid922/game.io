@@ -33,17 +33,20 @@ rl.question("Enter your name: ", function (name) {
       });
     });
 
-    socket.on("number", (player, number) => {
+    socket.on("number", () => {
       console.log(chalk.yellow("Your opponent made a move! Your turn now"));
-      rl.question("Enter a number: ", function (number) {
-        socket.emit("sendNumber", number);
+      rl.question("Enter a move from [-1, ,0, 1]", function (move) {
+        socket.emit("sendNumber", move);
         console.log(chalk.yellow("Waiting for other player move..."));
       });
     });
 
-    socket.on("youWin", (number) => {
-      // Player notified that she won
-      console.log("Congrats, you won!! with lucky number", number);
+    socket.on("youWin", () => {
+      console.log("YOU WON!");
+    });
+
+    socket.on("youLose", () => {
+      console.log("HARD LUCK!");
     });
   });
 

@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
     });
 
     let number = parseInt(num);
+    game.number = number;
 
     console.log(player.name, "sent first number", number);
 
@@ -74,21 +75,26 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("sendNumber", (num) => {
+  socket.on("sendNumber", (move) => {
     let player = game.players.find((player) => {
       return player.id === socket.id;
     });
 
-    let number = parseInt(num);
+    let increment = parseInt(move);
+    let number = Math.floor((game.number + increment) / 3);
+    game.number = number;
 
-    console.log(player.name, "sent", number);
+    console.log(player.name, "played", move, "Number is", number);
 
     // winning logic here
-    if (number % 3 === 0 && number / 3 === 1) {
-      console.log(player.name, "WIN!", number);
-      socket.broadcast.emit("youWin", number);
+    if (game.number === 1) {
+      console.log(player.name, "WINS!", number);
+
+      socket.emit("youWin");
+
+      socket.broadcast.emit("youLose");
     } else {
-      socket.broadcast.emit("number", player, number);
+      socket.broadcast.emit("number");
     }
   });
 
