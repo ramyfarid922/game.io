@@ -1,5 +1,6 @@
 const express = require("express");
 const http = require("http");
+const { parse } = require("path");
 const socketio = require("socket.io");
 const app = express();
 const server = http.createServer(app);
@@ -55,12 +56,17 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("sendFirstNumber", (number) => {
+  socket.on("sendFirstNumber", (num) => {
     let player = game.players.find((player) => {
       return player.id === socket.id;
     });
+
+    let number = parseInt(num);
+
     console.log(player.name, "sent first number", number);
-    if (number === 73) {
+
+    // winning logic here
+    if (number % 3 === 0 && number / 3 === 1) {
       console.log(player.name, "WIN!", number);
       socket.broadcast.emit("youWin", number);
     } else {
@@ -68,13 +74,17 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("sendNumber", (number) => {
+  socket.on("sendNumber", (num) => {
     let player = game.players.find((player) => {
       return player.id === socket.id;
     });
-    number = number + 11;
+
+    let number = parseInt(num);
+
     console.log(player.name, "sent", number);
-    if (number === 73) {
+
+    // winning logic here
+    if (number % 3 === 0 && number / 3 === 1) {
       console.log(player.name, "WIN!", number);
       socket.broadcast.emit("youWin", number);
     } else {
