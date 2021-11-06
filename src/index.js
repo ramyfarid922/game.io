@@ -1,4 +1,3 @@
-const path = require("path");
 const express = require("express");
 const http = require("http");
 const socketio = require("socket.io");
@@ -6,11 +5,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 5000;
-// const publicDirectoryPath = path.join(__dirname, "../public");
-const { generateMessage } = require("./utils/messages");
 
-// Configure app here
-// app.use(express.static(publicDirectoryPath));
+const { generateMessage } = require("./utils/messages");
 
 const game = {
   status: "PENDING",
