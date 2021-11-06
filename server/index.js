@@ -1,49 +1,34 @@
 const express = require("express");
 const http = require("http");
-const { parse } = require("path");
 const socketio = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 5000;
+const Game = require("./game");
 
-// Emitted events by server
-const emits = {
-  SERVER_WELCOME: "serverWelcome",
-  SERVER_ACCEPT_JOIN: "serverAcceptJoin",
-  SERVER_START_GAME: "serverStartGame",
-  SERVER_WELCOME: "serverWelcome",
-  PLAYER_LEAVE_GAME: "playerLeaveGame",
-};
-
-// events anticipated by server
-const incoming = {
-  PLAYER_JOIN_GAME: "playerJoinGame",
-};
-
-// Refactor later into a game class (using function constructor)
-let game = {
-  turn: 0,
-  status: "PENDING",
-  players: [],
-  number: null,
-  winner: null,
-};
+let game = new Game();
 
 console.log("Game initiated:", game);
 
 io.on("connection", (socket) => {
   if (game.status === "RUNNING") {
+    // If game has two players and its state is set to "RUNNING"
+    // Reject the 3rd player socket connection
     return socket.emit("serverFull", "Connection rejected! game is full");
   }
 
   console.log("------------------------");
 
+  // If game isn't full yet, emit a welcome event to the connecting player socket
   socket.emit("serverWelcome");
 
+  // Listen for a playerJoinGame event, emitted from the connecting socket
   socket.on("playerJoinGame", (name) => {
+    // On accepting a player join, create a player object literal
     let player = { name: name, id: socket.id };
 
+    // Refactor this 1
     game.players.push(player);
 
     socket.emit("serverAcceptJoin", game.players.length);
@@ -57,9 +42,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendFirstNumber", (num) => {
-    let player = game.players.find((player) => {
-      return player.id === socket.id;
-    });
+    let player = game.find(socket.id);
 
     let number = parseInt(num);
     game.number = number;
