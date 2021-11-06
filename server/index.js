@@ -42,15 +42,17 @@ io.on("connection", (socket) => {
 
   socket.on("playerJoinGame", (name) => {
     let player = { name: name, id: socket.id };
+
     game.players.push(player);
-    socket.emit("serverAcceptJoin");
+
+    socket.emit("serverAcceptJoin", game.players.length);
+
+    console.log("Current game:", game);
 
     if (game.players.length === 2) {
       game.status = "RUNNING";
       return socket.emit("serverStartGame");
     }
-
-    console.log("Current game:", game);
   });
 
   socket.on("sendFirstNumber", (number) => {

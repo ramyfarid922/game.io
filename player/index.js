@@ -19,8 +19,10 @@ rl.question("Enter your name: ", function (name) {
 
     socket.emit("playerJoinGame", name);
 
-    socket.on("serverAcceptJoin", () => {
-      console.log(chalk.yellow("Waiting for a player to join..."));
+    socket.on("serverAcceptJoin", (players) => {
+      if (players < 2) {
+        console.log(chalk.yellow("Waiting for a player to join..."));
+      }
     });
 
     socket.on("serverStartGame", () => {
