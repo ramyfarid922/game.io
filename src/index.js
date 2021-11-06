@@ -6,6 +6,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 5000;
 
+// Refactor later into a game class (using function constructor)
 let game = {
   turn: 0,
   status: "PENDING",
@@ -21,6 +22,7 @@ io.on("connection", (socket) => {
 
   console.log("------------------------");
   console.log("New websocket connection from", socket.id);
+
   socket.emit("serverWelcome", "Connection accepted!");
 
   socket.on("playerJoinGame", (name) => {
@@ -34,7 +36,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("number", () => {});
+  socket.on("sendNumber", (number) => {
+    let player = game.players.find((player) => {
+      return player.id === socket.id;
+    });
+    console.log(player.name, "sent", number);
+    socket.broadcast.emit("number", player, number + 1);
+  });
 
   socket.on("disconnect", () => {
     const removed = game.players.find((player) => {
