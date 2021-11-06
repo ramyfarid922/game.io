@@ -16,4 +16,11 @@ Game.prototype.find = function (id) {
   });
 };
 
+Game.prototype.addPlayer = function (player) {
+  if (this.players.length < 2) {
+    this.players.push(player);
+  }
+  return player;
+};
+
 module.exports = Game;

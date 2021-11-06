@@ -28,8 +28,7 @@ io.on("connection", (socket) => {
     // On accepting a player join, create a player object literal
     let player = { name: name, id: socket.id };
 
-    // Refactor this 1
-    game.players.push(player);
+    game.addPlayer(player);
 
     socket.emit("serverAcceptJoin", game.players.length);
 
