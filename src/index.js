@@ -36,12 +36,31 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("sendFirstNumber", (number) => {
+    let player = game.players.find((player) => {
+      return player.id === socket.id;
+    });
+    console.log(player.name, "sent first number", number);
+    if (number === 73) {
+      console.log(player.name, "WIN!", number);
+      socket.broadcast.emit("youWin", number);
+    } else {
+      socket.broadcast.emit("number", player, number);
+    }
+  });
+
   socket.on("sendNumber", (number) => {
     let player = game.players.find((player) => {
       return player.id === socket.id;
     });
+    number = number + 11;
     console.log(player.name, "sent", number);
-    socket.broadcast.emit("number", player, number + 1);
+    if (number === 73) {
+      console.log(player.name, "WIN!", number);
+      socket.broadcast.emit("youWin", number);
+    } else {
+      socket.broadcast.emit("number", player, number);
+    }
   });
 
   socket.on("disconnect", () => {
