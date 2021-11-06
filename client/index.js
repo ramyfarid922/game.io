@@ -1,30 +1,29 @@
 const readline = require("readline");
 const io = require("socket.io-client");
 const chalk = require("chalk");
+const { randomInt } = require("crypto");
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-const player = {};
-
-console.log(chalk.green("Welcome to game-of-three!"));
-
 rl.question("Enter your name: ", function (name) {
-  player.name = name;
-
   const socket = io("http://localhost:5000");
 
-  socket.on("serverWelcome", (message) => {
-    console.log(
-      chalk.green(
-        message.text,
-        new Date(message.createdAt).toLocaleTimeString()
-      )
-    );
+  socket.on("serverFull", (message) => {
+    console.log(chalk.red(message));
+  });
 
-    socket.emit("playerJoinGame", player, (game) => {
-      console.log(game);
+  socket.on("serverWelcome", (message) => {
+    console.log(chalk.green(message));
+
+    socket.emit("playerJoinGame", name);
+
+    socket.on("serverStartGame", () => {
+      rl.question("Enter number: ", function (number) {
+        socket.emit("number", number);
+      });
     });
   });
 });
