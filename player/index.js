@@ -44,12 +44,19 @@ rl.question("Enter your name: ", function (name) {
       });
     });
 
+    socket.on("draw", () => {
+      console.log("Game is draw!");
+      return rl.close();
+    });
+
     socket.on("youWin", () => {
       console.log("YOU WON!");
+      return rl.close();
     });
 
     socket.on("youLose", () => {
       console.log("HARD LUCK!");
+      return rl.close();
     });
   });
 

@@ -6,6 +6,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 5000;
 const Game = require("./game");
+const chalk = require("chalk");
 
 let game = new Game();
 
@@ -44,7 +45,12 @@ io.on("connection", (socket) => {
     let number = parseInt(num);
     game.number = number;
 
-    console.log(player.name, "sent first number", number);
+    console.log(
+      chalk.yellow("Game log: "),
+      player.name,
+      "sent first number",
+      number
+    );
 
     // winning logic here
     if (number % 3 === 0 && number / 3 === 1) {
@@ -59,6 +65,9 @@ io.on("connection", (socket) => {
     game.processMove(socket.id, move);
     game.logMove(socket.id, move);
 
+    if (game.status === "DRAW") {
+      return io.emit("draw");
+    }
     if (game.winner) {
       // Update the player who made the move that he won
       socket.emit("youWin");

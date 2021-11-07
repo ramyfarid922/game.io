@@ -53,7 +53,7 @@ Game.prototype.logMove = function (id, move) {
     );
   } else {
     console.log(
-      "Game log: ",
+      chalk.yellow("Game log: "),
       player.name,
       "played",
       move,
