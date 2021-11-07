@@ -1,0 +1,52 @@
+version: '2.2'
+
+# Containers networking configuration
+networks:
+  vpcbr:
+    driver: bridge  
+    ipam:
+     config:
+       - subnet: 172.25.0.0/16
+         gateway: 172.25.0.1
+
+services:
+    # Nodejs service 1 -- the first service will build the image for the others
+    game-server:
+        image: 
+        build: .
+        volumes:
+            - .:/app
+        ports:
+            - "3100:3100"
+        environment:
+            - NODE_SERVICE_ID=1111
+        command: node app
+          networks:
+            vpcbr:
+                ipv4_address: 172.25.0.2
+    player1:
+        image: 
+        volumes:
+            - .:/app
+        ports:
+            - "3200:3200"
+        environment:
+            - NODE_SERVICE_ID=2222
+        command: node app
+        networks:
+            vpcbr:
+                ipv4_address: 172.25.0.3
+    player2:
+        image: 
+        volumes:
+            - .:/app
+        ports:
+            - "3300:3300"
+        environment:
+            - NODE_SERVICE_ID=3333
+        command: node app
+        networks:
+            vpcbr:
+                ipv4_address: 172.25.0.4
+    
+    
