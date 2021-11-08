@@ -9,7 +9,7 @@ const Game = require("./game");
 
 let game = new Game();
 
-io.on("connection", (socket) => {
+const connectionHandler = (socket) => {
   if (game.status === "RUNNING") {
     // If game has two players and its state is set to "RUNNING"
     // Reject the 3rd player socket connection
@@ -70,7 +70,9 @@ io.on("connection", (socket) => {
     socket.emit("playerLeaveGame");
     game.reset();
   });
-});
+};
+
+io.on("connection", connectionHandler);
 
 server.listen(port, () => {
   console.log("Listening on port: " + port);
