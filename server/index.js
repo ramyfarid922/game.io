@@ -42,17 +42,7 @@ io.on("connection", (socket) => {
 
   // Listen for the event of incepting first number
   socket.on("inceptNumber", (num) => {
-    let player = game.findPlayer(socket.id);
-
-    let number = parseInt(num);
-    game.number = number;
-
-    console.log(
-      chalk.yellow("Game log: "),
-      player.name,
-      "sent first number",
-      number
-    );
+    game.incept(socket.id, num);
 
     if (game.winner) {
       // Update the player who made the move that he won
@@ -67,10 +57,6 @@ io.on("connection", (socket) => {
   socket.on("sendMove", (move) => {
     game.move(socket.id, move);
     game.logMove(socket.id, move);
-
-    if (game.status === "DRAW") {
-      return io.emit("draw");
-    }
 
     if (game.winner) {
       // Update the player who made the move that he won
