@@ -7,6 +7,15 @@ const io = socketio(server);
 const port = process.env.PORT || 5000;
 const Game = require("./game");
 
+const events = {
+  SERVER_WELCOME: "serverWelcome",
+  SERVER_ACCEPT_JOIN: "serverAcceptJoin",
+  SERVER_START_GAME: "serverStartGame",
+  SERVER_WELCOME: "serverWelcome",
+  PLAYER_LEAVE_GAME: "playerLeaveGame",
+  PLAYER_JOIN_GAME: "playerJoinGame",
+};
+
 let game = new Game();
 
 // Utility functions
@@ -32,9 +41,9 @@ const checkFull = (socket, status) => {
 const connectionHandler = (socket) => {
   checkFull(socket, game.status);
 
-  socket.emit("serverWelcome");
+  socket.emit(events.SERVER_WELCOME);
 
-  socket.on("playerJoinGame", (name) => {
+  socket.on(events.PLAYER_JOIN_GAME, (name) => {
     // On accepting a player join, create a player object literal
     let player = { name: name, id: socket.id };
 
