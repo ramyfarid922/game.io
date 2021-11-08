@@ -38,6 +38,19 @@ class Game {
     }
   }
 
+  incept(id, num) {
+    let player = this.findPlayer(id);
+    let number = parseInt(num);
+    this.number = number;
+
+    console.log(
+      chalk.yellow("Game log: "),
+      player.name,
+      "sent first number",
+      this.number
+    );
+  }
+
   logMove = function (id, move) {
     let player = this.findPlayer(id);
     if (this.winner) {
