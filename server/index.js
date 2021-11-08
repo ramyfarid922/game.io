@@ -9,13 +9,15 @@ const Game = require("./game");
 
 let game = new Game();
 
-const disconnectHandler = () => {
-  const removed = game.players.find((player) => {
-    return player.id === socket.id;
-  });
-  game.players.splice(game.players.indexOf(removed), 1);
-  socket.emit("playerLeaveGame");
-  game.reset();
+const checkWin = (socket, win) => {
+  if (win) {
+    // Update the player who made the move that he won
+    socket.emit("youWin");
+    // Update the opponent that they lost
+    socket.broadcast.emit("youLose");
+  } else {
+    socket.broadcast.emit("number");
+  }
 };
 
 const connectionHandler = (socket) => {
@@ -61,23 +63,12 @@ const connectionHandler = (socket) => {
     game.move(socket.id, move);
     game.log(socket.id, move);
 
-    if (game.winner) {
-      // Update the player who made the move that he won
-      socket.emit("youWin");
-      // Update the opponent that they lost
-      socket.broadcast.emit("youLose");
-    } else {
-      socket.broadcast.emit("number");
-    }
+    checkWin(socket, game.winner);
   });
 
   socket.on("disconnect", () => {
-    const removed = game.players.find((player) => {
-      return player.id === socket.id;
-    });
-    game.players.splice(game.players.indexOf(removed), 1);
+    game.removePlayer(socket.id);
     socket.emit("playerLeaveGame");
-    game.reset();
   });
 };
 

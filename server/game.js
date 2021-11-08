@@ -62,6 +62,14 @@ class Game {
     });
   }
 
+  removePlayer(id) {
+    const removed = this.players.find((player) => {
+      return player.id === id;
+    });
+    this.players.splice(this.players.indexOf(removed), 1);
+    this.reset();
+  }
+
   addPlayer(player) {
     if (this.players.length < 2) {
       this.players.push(player);
