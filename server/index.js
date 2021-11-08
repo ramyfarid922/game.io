@@ -10,6 +10,10 @@ const chalk = require("chalk");
 
 let game = new Game();
 
+game.on("playerAdded", () => {
+  console.log("Our game emits events now");
+});
+
 io.on("connection", (socket) => {
   if (game.status === "RUNNING") {
     // If game has two players and its state is set to "RUNNING"
