@@ -1,5 +1,6 @@
 const inceptHandler = (num) => {};
 const moveHandler = (move) => {};
+
 const disconnectHandler = () => {
   const removed = game.players.find((player) => {
     return player.id === socket.id;
@@ -8,6 +9,7 @@ const disconnectHandler = () => {
   socket.emit("playerLeaveGame");
   game.reset();
 };
+
 const playerJoinGameHandler = (name) => {};
 
 module.exports = {};

@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
 
   socket.on("sendMove", (move) => {
     game.move(socket.id, move);
-    game.logMove(socket.id, move);
+    game.log(socket.id, move);
 
     if (game.winner) {
       // Update the player who made the move that he won
