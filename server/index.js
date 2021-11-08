@@ -8,11 +8,9 @@ const port = process.env.PORT || 5000;
 const Game = require("./game");
 const chalk = require("chalk");
 
-let game = new Game();
+checkWin = () => {};
 
-game.on("playerAdded", () => {
-  console.log("Our game emits events now");
-});
+let game = new Game();
 
 io.on("connection", (socket) => {
   if (game.status === "RUNNING") {
@@ -56,12 +54,13 @@ io.on("connection", (socket) => {
       number
     );
 
-    // winning logic here
-    if (number % 3 === 0 && number / 3 === 1) {
-      console.log(player.name, "WIN!", number);
-      socket.broadcast.emit("youWin", number);
+    if (game.winner) {
+      // Update the player who made the move that he won
+      socket.emit("youWin");
+      // Update the opponent that they lost
+      socket.broadcast.emit("youLose");
     } else {
-      socket.broadcast.emit("number", player, number);
+      socket.broadcast.emit("number");
     }
   });
 
@@ -72,6 +71,7 @@ io.on("connection", (socket) => {
     if (game.status === "DRAW") {
       return io.emit("draw");
     }
+
     if (game.winner) {
       // Update the player who made the move that he won
       socket.emit("youWin");

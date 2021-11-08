@@ -1,10 +1,8 @@
 const chalk = require("chalk");
 const { EventEmitter } = require("events");
 
-// I am using ES5 function constructors style in creating the game class
-class Game extends EventEmitter {
+class Game {
   constructor() {
-    super();
     this.status = "PENDING";
     this.players = [];
     this.number = null;
@@ -27,10 +25,11 @@ class Game extends EventEmitter {
   addPlayer(player) {
     if (this.players.length < 2) {
       this.players.push(player);
-      this.emit("playerAdded");
     }
     return player;
   }
+
+  processIncept = function () {};
 
   processMove = function (id, move) {
     let increment = parseInt(move);
