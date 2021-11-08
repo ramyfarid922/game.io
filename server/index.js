@@ -8,8 +8,6 @@ const port = process.env.PORT || 5000;
 const Game = require("./game");
 const chalk = require("chalk");
 
-checkWin = () => {};
-
 let game = new Game();
 
 io.on("connection", (socket) => {
@@ -19,10 +17,8 @@ io.on("connection", (socket) => {
     return socket.emit("serverFull", "Connection rejected! game is full");
   }
 
-  // If game isn't full yet, emit a welcome event to the connecting player socket
   socket.emit("serverWelcome");
 
-  // Listen for a playerJoinGame event, emitted from the connecting socket
   socket.on("playerJoinGame", (name) => {
     // On accepting a player join, create a player object literal
     let player = { name: name, id: socket.id };
@@ -40,7 +36,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Listen for the event of incepting first number
   socket.on("inceptNumber", (num) => {
     game.incept(socket.id, num);
 
