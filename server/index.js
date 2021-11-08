@@ -18,33 +18,6 @@ const disconnectHandler = () => {
   game.reset();
 };
 
-const moveHandler = (move) => {
-  game.move(socket.id, move);
-  game.log(socket.id, move);
-
-  if (game.winner) {
-    // Update the player who made the move that he won
-    socket.emit("youWin");
-    // Update the opponent that they lost
-    socket.broadcast.emit("youLose");
-  } else {
-    socket.broadcast.emit("number");
-  }
-};
-
-const inceptHandler = (num) => {
-  game.incept(socket.id, num);
-
-  if (game.winner) {
-    // Update the player who made the move that he won
-    socket.emit("youWin");
-    // Update the opponent that they lost
-    socket.broadcast.emit("youLose");
-  } else {
-    socket.broadcast.emit("number");
-  }
-};
-
 const connectionHandler = (socket) => {
   if (game.status === "RUNNING") {
     // If game has two players and its state is set to "RUNNING"
@@ -71,9 +44,41 @@ const connectionHandler = (socket) => {
     }
   });
 
-  socket.on("inceptNumber", inceptHandler);
-  socket.on("sendMove", moveHandler);
-  socket.on("disconnect", disconnectHandler);
+  socket.on("inceptNumber", (num) => {
+    game.incept(socket.id, num);
+
+    if (game.winner) {
+      // Update the player who made the move that he won
+      socket.emit("youWin");
+      // Update the opponent that they lost
+      socket.broadcast.emit("youLose");
+    } else {
+      socket.broadcast.emit("number");
+    }
+  });
+
+  socket.on("sendMove", (move) => {
+    game.move(socket.id, move);
+    game.log(socket.id, move);
+
+    if (game.winner) {
+      // Update the player who made the move that he won
+      socket.emit("youWin");
+      // Update the opponent that they lost
+      socket.broadcast.emit("youLose");
+    } else {
+      socket.broadcast.emit("number");
+    }
+  });
+
+  socket.on("disconnect", () => {
+    const removed = game.players.find((player) => {
+      return player.id === socket.id;
+    });
+    game.players.splice(game.players.indexOf(removed), 1);
+    socket.emit("playerLeaveGame");
+    game.reset();
+  });
 };
 
 io.on("connection", connectionHandler);
