@@ -6,7 +6,6 @@ const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 5000;
 const Game = require("./game");
-const chalk = require("chalk");
 
 let game = new Game();
 
