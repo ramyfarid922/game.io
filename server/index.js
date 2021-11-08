@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMove", (move) => {
-    game.processMove(socket.id, move);
+    game.move(socket.id, move);
     game.logMove(socket.id, move);
 
     if (game.status === "DRAW") {

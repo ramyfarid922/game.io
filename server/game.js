@@ -29,16 +29,14 @@ class Game {
     return player;
   }
 
-  processIncept = function () {};
-
-  processMove = function (id, move) {
+  move(id, move) {
     let increment = parseInt(move);
     this.number = Math.floor((this.number + increment) / 3);
     if (this.number === 1) {
       this.status = "FINISHED";
       this.winner = this.findPlayer(id);
     }
-  };
+  }
 
   logMove = function (id, move) {
     let player = this.findPlayer(id);
