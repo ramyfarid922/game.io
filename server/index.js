@@ -9,6 +9,7 @@ const Game = require("./game");
 
 let game = new Game();
 
+// Utility functions
 const checkWin = (socket, win) => {
   if (win) {
     // Update the player who made the move that he won
@@ -19,7 +20,6 @@ const checkWin = (socket, win) => {
     socket.broadcast.emit("number");
   }
 };
-
 const checkFull = (socket, status) => {
   if (status === "RUNNING") {
     // If game has two players and its state is set to "RUNNING"
@@ -28,6 +28,7 @@ const checkFull = (socket, status) => {
   }
 };
 
+// Event Handler function
 const connectionHandler = (socket) => {
   checkFull(socket, game.status);
 
@@ -67,6 +68,7 @@ const connectionHandler = (socket) => {
   });
 };
 
+// Event Handler registration
 io.on("connection", connectionHandler);
 
 server.listen(port, () => {
